@@ -18,9 +18,14 @@ class Bullet(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = spaceship.rect.center
         self.owner = spaceship.type
+
+        if spaceship.type == 'player':
+            self.direction = -1  # Dirección de la bala del jugador hacia arriba
+        else:
+            self.direction = 1  # Dirección de la bala del enemigo hacia abajo
     
     def update(self, bullets):
-        self.rect.y += self.SPEED
+        self.rect.y += self.SPEED * self.direction
         if self.rect.y >= SCREEN_HEIGHT:
             bullets.remove(self)
 

@@ -36,7 +36,7 @@ class Game:
 
     def update(self):
         user_imput = pygame.key.get_pressed()
-        self.player.update(user_imput)
+        self.player.update(user_imput, self.bullet_manager)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
 
