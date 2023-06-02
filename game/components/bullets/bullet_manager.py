@@ -13,10 +13,7 @@ class BulletManager:
                    game.enemy_manager.enemies.remove(enemy)
                    game.update_score()
                    self.bullets.remove(bullet)
-        
-        
-            
-
+                   
         for bullet in self.enemy_bullets:
             bullet.update(self.enemy_bullets)
             
@@ -24,11 +21,9 @@ class BulletManager:
                 self.enemy_bullets.remove(bullet)
                 game.death_count += 1
                 game.playing = False
-                pygame.time.delay(10000)
+                pygame.time.delay(100)
                 break
  
-                 
-            
     def draw(self, screen):
         for bullet in self.enemy_bullets:
             bullet.draw(screen)

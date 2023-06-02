@@ -1,6 +1,6 @@
 import pygame
 
-from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE,FONT_STYLE
+from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE,FONT_STYLE, FONT_STYLE2
 from game.components.Spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
@@ -23,6 +23,7 @@ class Game:
         self.enemy_manager = EnemyManager()
         self.bullet_manager = BulletManager()
         self.menu = Menu('Press any key to Start...', self.screen)
+        self.max_score = 0
         
     
 
@@ -31,7 +32,6 @@ class Game:
         while self.running:
             if not self.playing:
                 self.show_menu()
-            self.run()
         pygame.display.quit()
         pygame.quit()
     
@@ -84,25 +84,51 @@ class Game:
     
     def show_menu(self):
         self.menu.reset_screen_color(self.screen)
-        half_screen_whidth =SCREEN_WIDTH//2
-        half_screen_Height =SCREEN_HEIGHT//2
+        half_screen_width =SCREEN_WIDTH // 2
+        half_screen_height =SCREEN_HEIGHT // 2
         if self.death_count > 0:
-            self.menu.update_message('New message')
+            self.menu.update_message('GAME OVER:(')
+            score_text = f"Your Score: {self.score}"
+            death_text = f"Death count: {self.death_count}"
+            max_score_text = f"Max Score: {self.max_score}"
+
+            score_font = pygame.font.Font(FONT_STYLE2, 20)
+            death_font = pygame.font.Font(FONT_STYLE2, 20)
+            max_score_font = pygame.font.Font(FONT_STYLE2, 20)
+            
+            
+
+            score_surface = score_font.render(score_text, True, (0, 0, 0))
+            death_surface = death_font.render(death_text, True, (0, 0, 0))
+            max_score_surface = max_score_font.render(max_score_text, True, (0, 0, 0))
+
+            score_rect = score_surface.get_rect(center=(half_screen_width, half_screen_height + 100))
+            death_rect = death_surface.get_rect(center=(half_screen_width, half_screen_height + 150))
+            max_score_rect = max_score_surface.get_rect(center=(half_screen_width, half_screen_height + 200))
+
+            self.screen.blit(score_surface, score_rect)
+            self.screen.blit(death_surface, death_rect)
+            self.screen.blit(max_score_surface, max_score_rect)
+
         icon = pygame.transform.scale(ICON, (80,120))
-        self.screen.blit(icon, (half_screen_Height-150, half_screen_whidth-50))
+        self.screen.blit(icon, (half_screen_width - 50, half_screen_height - 150))
         self.menu.draw(self.screen)
         self.menu.update(self)
     
 
     def update_score(self):
         self.score += 1
+        if self.score > self.max_score:
+            self.max_score = self.score
+
     
     def draw_socore(self):
-        font = pygame.font.Font(FONT_STYLE)
-        text = font.render(F'Score{self.score}', True,(255, 255,255))
+        font = pygame.font.Font(FONT_STYLE2,20)
+        text = font.render(F'Score: {self.score}', True,(255, 255,255))
         text_rect = text.get_rect()
         text_rect.center = (1000, 50)
         self.screen.blit(text, text_rect)
+    
     def reset_all(self):
         self.score = 0
         self.enemy_manager.reset()

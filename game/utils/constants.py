@@ -29,3 +29,5 @@ ENEMY_1 = pygame.image.load(os.path.join(IMG_DIR, "Enemy/enemy_1.png"))
 ENEMY_2 = pygame.image.load(os.path.join(IMG_DIR, "Enemy/enemy_2.png"))
 ENEMY_3 = pygame.image.load(os.path.join(IMG_DIR, "Enemy/asteroide.png"))
 FONT_STYLE = 'freesansbold.ttf'
+FONT_STYLE2 = "fonts/PressStart2P-vaV7.ttf"
+
