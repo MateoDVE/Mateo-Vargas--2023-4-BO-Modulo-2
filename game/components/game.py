@@ -5,6 +5,7 @@ from game.components.Spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
 from game.components.menu import Menu
+from game.components.powerups.power_up_manager import PowerUpManager
 class Game:
     def __init__(self):
         pygame.init()
@@ -24,6 +25,7 @@ class Game:
         self.bullet_manager = BulletManager()
         self.menu = Menu('Press any key to Start...', self.screen)
         self.max_score = 0
+        self.power_up_manager = PowerUpManager()
         
     
 
@@ -59,6 +61,7 @@ class Game:
         self.player.update(user_imput, self.bullet_manager)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
+        self.power_up_manager.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -67,7 +70,9 @@ class Game:
         self.player.draw(self.screen)
         self.enemy_manager.draw(self.screen)
         self.bullet_manager.draw(self.screen)
-        self.draw_socore()
+        self.power_up_manager.draw(self.screen)
+        self.draw_power_up_time()
+        self.draw_score()
         pygame.display.update()
 
 
@@ -87,10 +92,10 @@ class Game:
         half_screen_width =SCREEN_WIDTH // 2
         half_screen_height =SCREEN_HEIGHT // 2
         if self.death_count > 0:
-            self.menu.update_message('GAME OVER:(')
+            self.menu.update_message('GAME OVER Press any key to Start...')
             score_text = f"Your Score: {self.score}"
-            death_text = f"Death count: {self.death_count}"
-            max_score_text = f"Max Score: {self.max_score}"
+            death_text = f"Total Deaths: {self.death_count}"
+            max_score_text = f"Highest Score: {self.max_score}"
 
             score_font = pygame.font.Font(FONT_STYLE2, 20)
             death_font = pygame.font.Font(FONT_STYLE2, 20)
@@ -112,7 +117,7 @@ class Game:
 
         icon = pygame.transform.scale(ICON, (80,120))
         self.screen.blit(icon, (half_screen_width - 50, half_screen_height - 150))
-        self.menu.draw(self.screen)
+        self.menu.draw(self.screen, 'Press any key to Start...')
         self.menu.update(self)
     
 
@@ -122,7 +127,7 @@ class Game:
             self.max_score = self.score
 
     
-    def draw_socore(self):
+    def draw_score(self):
         font = pygame.font.Font(FONT_STYLE2,20)
         text = font.render(F'Score: {self.score}', True,(255, 255,255))
         text_rect = text.get_rect()
@@ -134,3 +139,14 @@ class Game:
         self.enemy_manager.reset()
         self.bullet_manager.reset()
         self.player.reset()
+        self.power_up_manager.reset()
+    
+    def draw_power_up_time(self):
+        if self.player.has_power_up:
+            time_to_show = round((self.player.power_time_up - pygame.time.get_ticks())/1000, 2)
+            if time_to_show >= 0:
+                self.menu.draw(self.screen, f'{self.player.power_up_type.capitalize()} is enabled for {time_to_show} seconds',540, 50,(255, 255, 255))
+            else:
+                self.player.has_power_up = False
+                self.player.power_up_type = DEFAULT_TYPE
+                self.player.set_image()
