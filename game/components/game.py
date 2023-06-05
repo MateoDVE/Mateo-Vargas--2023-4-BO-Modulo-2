@@ -68,9 +68,6 @@ class Game:
         self.bullet_manager.update(self)
         self.asteroid_manager.update(self)
         self.power_up_manager.update(self)
-        if self.player.has_power_up and self.player.power_up_type == 'rapid_fire':
-            if not self.player.rapid_fire:
-                self.player.activate_rapid_fire()
 
     def draw(self):
         self.clock.tick(FPS)

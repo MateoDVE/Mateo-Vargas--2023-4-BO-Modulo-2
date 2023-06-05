@@ -16,7 +16,6 @@ class BulletManager:
                 game.power_up_manager.power_ups.remove(power_up)
             elif isinstance(power_up, Life) and game.player.rect.colliderect(power_up.rect):
                 game.add_life()
-                game.live = True
                 game.life_count += 1
                 game.power_up_manager.power_ups.remove(power_up)
                 
