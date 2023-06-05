@@ -1,11 +1,13 @@
 import pygame
 
-from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE,FONT_STYLE, FONT_STYLE2
+from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE,FONT_STYLE, FONT_STYLE2,HEART
 from game.components.Spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
+from game.components.asteroids.asteroids_manager import AsteroidManager
 from game.components.menu import Menu
 from game.components.powerups.power_up_manager import PowerUpManager
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -20,12 +22,16 @@ class Game:
         self.y_pos_bg = 0
         self.death_count = 0
         self.score = 0
+        self.life_count = 0
+        self.lives = 3  
         self.player = Spaceship()
+        self.asteroid_manager = AsteroidManager()
         self.enemy_manager = EnemyManager()
         self.bullet_manager = BulletManager()
         self.menu = Menu('Press any key to Start...', self.screen)
         self.max_score = 0
         self.power_up_manager = PowerUpManager()
+        self.music_game = pygame.mixer.Sound('game/assets/Sonidos/StarWarsMusic.mp3')
         
     
 
@@ -49,7 +55,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-            pygame.display.update()
 
     def events(self):
         for event in pygame.event.get():
@@ -61,7 +66,11 @@ class Game:
         self.player.update(user_imput, self.bullet_manager)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
+        self.asteroid_manager.update(self)
         self.power_up_manager.update(self)
+        if self.player.has_power_up and self.player.power_up_type == 'rapid_fire':
+            if not self.player.rapid_fire:
+                self.player.activate_rapid_fire()
 
     def draw(self):
         self.clock.tick(FPS)
@@ -70,9 +79,11 @@ class Game:
         self.player.draw(self.screen)
         self.enemy_manager.draw(self.screen)
         self.bullet_manager.draw(self.screen)
+        self.asteroid_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
         self.draw_power_up_time()
         self.draw_score()
+        self.draw_lives()
         pygame.display.update()
 
 
@@ -103,9 +114,9 @@ class Game:
             
             
 
-            score_surface = score_font.render(score_text, True, (0, 0, 0))
-            death_surface = death_font.render(death_text, True, (0, 0, 0))
-            max_score_surface = max_score_font.render(max_score_text, True, (0, 0, 0))
+            score_surface = score_font.render(score_text, True, (255, 255,255))
+            death_surface = death_font.render(death_text, True, (255, 255,255))
+            max_score_surface = max_score_font.render(max_score_text, True, (255, 255,255))
 
             score_rect = score_surface.get_rect(center=(half_screen_width, half_screen_height + 100))
             death_rect = death_surface.get_rect(center=(half_screen_width, half_screen_height + 150))
@@ -115,6 +126,9 @@ class Game:
             self.screen.blit(death_surface, death_rect)
             self.screen.blit(max_score_surface, max_score_rect)
 
+        
+        my_image = pygame.image.load("Portada/StrwLogo.png")
+        self.screen.blit(my_image, (390, 60))
         icon = pygame.transform.scale(ICON, (80,120))
         self.screen.blit(icon, (half_screen_width - 50, half_screen_height - 150))
         self.menu.draw(self.screen, 'Press any key to Start...')
@@ -136,10 +150,13 @@ class Game:
     
     def reset_all(self):
         self.score = 0
+        self.music_game.stop()
         self.enemy_manager.reset()
+        self.asteroid_manager.reset()
         self.bullet_manager.reset()
         self.player.reset()
         self.power_up_manager.reset()
+        
     
     def draw_power_up_time(self):
         if self.player.has_power_up:
@@ -150,3 +167,11 @@ class Game:
                 self.player.has_power_up = False
                 self.player.power_up_type = DEFAULT_TYPE
                 self.player.set_image()
+    
+    def add_life(self):
+        self.lives += 1
+        
+    def draw_lives(self):
+        self.menu.draw(self.screen, f' Vidas: {self.lives}',50, 50,(255, 255, 255))
+
+

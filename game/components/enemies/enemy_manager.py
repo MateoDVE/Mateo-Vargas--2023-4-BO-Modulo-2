@@ -7,7 +7,7 @@ class EnemyManager:
         self.enemies = []
         self.enemy_count = 1  
         self.time_since_increase = 0  
-        self.increase_interval = 10  
+        self.increase_interval = 8  
 
     def update(self, game):
         self.add_enemy()
@@ -18,7 +18,7 @@ class EnemyManager:
         self.time_since_increase += 1  
 
 
-        if self.time_since_increase >= self.increase_interval * 60:  
+        if self.time_since_increase >= self.increase_interval * 50:  
             self.time_since_increase = 0  
             self.enemy_count += 3  
 
@@ -32,4 +32,6 @@ class EnemyManager:
             self.enemies.append(enemy)
     def reset(self):
         self.enemies = []
-
+        self.enemy_count = 1  
+        self.time_since_increase = 0  
+        self.increase_interval = 8   
